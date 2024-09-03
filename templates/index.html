@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Usage Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .card {
+            margin-bottom: 1.5rem;
+        }
+        .progress {
+            height: 20px;
+        }
+        .progress-bar {
+            font-size: 0.9rem;
+            line-height: 20px;
+        }
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+        .dashboard-header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        .drive-info {
+            margin-top: 20px;
+        }
+    </style>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="dashboard-header text-center">
+            <h1>System Usage Dashboard</h1>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <h5 class="card-title">CPU Usage</h5>
+                        <div class="progress">
+                            <div id="cpu-usage" class="progress-bar bg-info" role="progressbar" style="width: 0%;">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Memory Usage</h5>
+                        <div class="progress">
+                            <div id="memory-usage" class="progress-bar bg-success" role="progressbar" style="width: 0%;">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row drive-info" id="drives-container">
+            <!-- Drives info will be inserted here dynamically -->
+        </div>
+    </div>
+
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('system_stats', function(data) {
+            // Update CPU usage
+            var cpuUsageElement = document.getElementById('cpu-usage');
+            cpuUsageElement.style.width = data.cpu_usage + '%';
+            cpuUsageElement.textContent = data.cpu_usage + '%';
+
+            // Update Memory usage
+            var memoryUsageElement = document.getElementById('memory-usage');
+            memoryUsageElement.style.width = data.memory_usage + '%';
+            memoryUsageElement.textContent = data.memory_usage + '%';
+
+            // Update Drives information
+            var drivesContainer = document.getElementById('drives-container');
+            drivesContainer.innerHTML = ''; // Clear existing drives info
+
+            data.drives.forEach(function(drive) {
+                var driveCard = `
+                    <div class="col-md-6">
+                        <div class="card border-success">
+                            <div class="card-body " style=" height:200px; ">
+                                <h5 class="card-title">${drive.device} (${drive.mountpoint})</h5>
+                                <p class="card-text">Filesystem: ${drive.fstype}</p>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: ${drive.percent}%;">
+                                        ${drive.percent}%
+                                    </div>
+                                </div>
+                                <p class="card-text mt-2">
+                                    Used: ${(drive.used / (1024**3)).toFixed(2)} GB / ${(drive.total / (1024**3)).toFixed(2)} GB
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                drivesContainer.innerHTML += driveCard;
+            });
+        });
+    </script>
+</body>
+</html>
