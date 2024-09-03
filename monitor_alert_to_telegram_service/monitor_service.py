@@ -3,8 +3,8 @@ import requests
 import time
 
 # Configuration
-TELEGRAM_TOKEN = '7211412404:AAFTO0ud7ljRciRCCleffFZFKqdxKESzSGs'
-CHAT_ID = '5550108562'
+TELEGRAM_TOKEN = 'token'
+CHAT_ID = 'chat_id'
 CPU_THRESHOLD = 99
 MEMORY_THRESHOLD = 33
 DRIVE_THRESHOLD = 90
