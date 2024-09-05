@@ -30,7 +30,7 @@
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
 </head>
 <body>
-    <div class="container mt-5">
+    <div class="container-fluid mt-5">
         <div class="dashboard-header text-center">
             <h1>System Usage Dashboard</h1>
         </div>
@@ -82,7 +82,7 @@
 
             data.drives.forEach(function(drive) {
                 var driveCard = `
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card border-success">
                             <div class="card-body " style=" height:200px; ">
                                 <h5 class="card-title">${drive.device} (${drive.mountpoint})</h5>
